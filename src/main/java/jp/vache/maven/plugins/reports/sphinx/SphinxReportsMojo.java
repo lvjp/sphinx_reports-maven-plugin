@@ -4,6 +4,10 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.Execute;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.reporting.MavenReport;
 import org.apache.maven.reporting.MavenReportException;
 
@@ -15,59 +19,52 @@ import java.util.Locale;
 
 /**
  * @author VERDOÏA Laurent <verdoialaurent@gmail.com>
- * @goal generate
- * @phase site
  */
+@Mojo(name = "generate")
+@Execute(phase = LifecyclePhase.SITE)
 public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
 
     /**
      * Specifies the input encoding.
-     *
-     * @parameter default-value = "${project.build.sourceEncoding}"
      */
+    @Parameter(name = "inputEncoding", defaultValue = "${project.build.sourceEncoding}")
     private String inputEncoding;
 
     /**
      * Specifies the output encoding.
-     *
-     * @parameter default-value = "${project.build.outputEncoding}"
      */
+    @Parameter(name = "outputEncoding", defaultValue = "${project.build.outputEncoding}")
     private String outputEncoding;
 
 
     /**
      * The name of the report.
-     *
-     * @parameter default-value="Sphinx"
      */
+    @Parameter(name = "name", defaultValue = "Sphinx")
     private String name;
 
     /**
      * The description of the report.
-     *
-     * @parameter default-value="Documentation via sphinx"
      */
+    @Parameter(name = "description", defaultValue = "Documentation via sphinx")
     private String description;
 
     /**
      * The directory containing the documentation source.
-     *
-     * @parameter default-value = "${basedir}/src/site/sphinx"
      */
+    @Parameter(name = "inputDirectory", defaultValue = "${basedir}/src/site/sphinx")
     private File inputDirectory;
 
     /**
      * The directory where the generated output will be placed.
-     *
-     * @parameter default-value = "${project.reporting.outputDirectory}/sphinx"
      */
+    @Parameter(name = "reportOutputDirectory", defaultValue = "${project.reporting.outputDirectory}/sphinx")
     private File reportOutputDirectory;
 
     /**
      * The name of the destination directory.
-     *
-     * @parameter default-value = "sphinx"
      */
+    @Parameter(name = "destinationDirectory", defaultValue = "sphinx")
     private String destinationDirectory;
 
     @Override
