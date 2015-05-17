@@ -3,17 +3,18 @@ package jp.vache.maven.plugins.reports.sphinx;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.reporting.MavenReport;
 import org.apache.maven.reporting.MavenReportException;
 
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.util.Locale;
 
 /**
@@ -134,26 +135,20 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
     }
 
     private void generate() {
-        final Log log = getLog();
+        final ScriptEngine engine = new ScriptEngineManager().getEngineByName("python");
 
-        final File outputFile = new File(reportOutputDirectory, getOutputName() + ".html");
-        log.info("Output file: " + outputFile);
+        final ScriptContext context = engine.getContext();
+        context.setWriter(new PrintWriter(System.out));
+        context.setErrorWriter(new PrintWriter(System.err));
 
-        Writer writer = null;
         try {
-            writer = new FileWriter(outputFile);
-            writer.write("The Sphinx plugin output");
-            writer.flush();
-        } catch (final IOException e) {
-            throw new RuntimeException("IO Error", e);
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (final IOException e) {
-                    throw new RuntimeException("Cannot close file", e);
-                }
-            }
+            engine.eval("import os");
+            engine.eval("import sys");
+            engine.eval("print 'Python OS: ' + os.name");
+            engine.eval("print 'Python subversion: ' + sys.subversion");
+            engine.eval("print 'Python version: ' + sys.version");
+        } catch (final ScriptException e) {
+            throw new RuntimeException("Cannot run python script", e);
         }
     }
 }
