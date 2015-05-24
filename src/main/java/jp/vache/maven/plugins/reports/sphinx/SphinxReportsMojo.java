@@ -89,7 +89,7 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
 
     @Override
     public void setReportOutputDirectory(File reportOutputDirectory) {
-        this.reportOutputDirectory = reportOutputDirectory;
+        updateReportOutputDirectory(reportOutputDirectory, destinationDirectory);
     }
 
     @Override
@@ -98,6 +98,7 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
     }
 
     public void setDestinationDirectory(final String destinationDirectory) {
+        updateReportOutputDirectory(reportOutputDirectory, destinationDirectory);
         this.destinationDirectory = destinationDirectory;
     }
 
