@@ -146,7 +146,6 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
             engine.eval("import os");
             engine.eval("import sys");
             engine.eval("print 'Python OS: ' + os.name");
-            engine.eval("print 'Python subversion: ' + sys.subversion");
             engine.eval("print 'Python version: ' + sys.version");
         } catch (final ScriptException e) {
             throw new RuntimeException("Cannot run python script", e);
