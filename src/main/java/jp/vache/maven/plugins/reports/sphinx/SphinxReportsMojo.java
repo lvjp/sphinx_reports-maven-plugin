@@ -10,12 +10,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.reporting.MavenReport;
 import org.apache.maven.reporting.MavenReportException;
 
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.File;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -69,6 +65,12 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
      */
     @Parameter(name = "destinationDirectory", defaultValue = "sphinx")
     private String destinationDirectory;
+
+    /**
+     * Sphinx source code directory.
+     */
+    @Parameter(name = "sphinxSources", required = true, property = "sphinxSources")
+    private File sphinxSources;
 
     @Override
     public String getName(Locale locale) {
@@ -130,7 +132,11 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        generate();
+        try {
+            generate();
+        } catch (final MavenReportException e) {
+            throw new MojoFailureException("Cannot generate report", e);
+        }
     }
 
     @Override
@@ -138,23 +144,32 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
         generate();
     }
 
-    private void generate() {
-        final ScriptEngine engine = new ScriptEngineManager().getEngineByName("python");
+    private void generate() throws MavenReportException {
+        printParameters();
 
-        final ScriptContext context = engine.getContext();
-        context.setWriter(new PrintWriter(System.out));
-        context.setErrorWriter(new PrintWriter(System.err));
+        final SphinxContext context = createContext();
 
         try {
-            engine.eval("import os");
-            engine.eval("import sys");
-            engine.eval("print 'Python OS: ' + os.name");
-            engine.eval("print 'Python version: ' + sys.version");
+            SphinxRunner.run(context);
         } catch (final ScriptException e) {
-            throw new RuntimeException("Cannot run python script", e);
+            throw new MavenReportException("Sphinx error", e);
         }
+    }
 
-        printParameters();
+    private SphinxContext createContext() {
+        final SphinxContext context = new SphinxContext();
+
+        context.builder = "html";
+
+        context.isVerbose = true;
+        context.showWarning = true;
+
+        context.input = inputDirectory.getAbsolutePath().toString();
+        context.output = reportOutputDirectory.getAbsolutePath().toString();
+        context.sphinx = sphinxSources.toString();
+        context.argv0 = new File(sphinxSources, "sphinx-builder").getAbsolutePath().toString();
+
+        return context;
     }
 
     private void printParameters() {
@@ -173,6 +188,7 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
         data.put("reportOutputDirectory", reportOutputDirectory.toString());
         data.put("destinationDirectory", destinationDirectory);
         data.put("getOutputName()", getOutputName());
+        data.put("sphinxSources", sphinxSources.toString());
 
         for (final Map.Entry<String, String> pair : data.entrySet()) {
             log.info(pair.getKey() + " => " + pair.getValue());
