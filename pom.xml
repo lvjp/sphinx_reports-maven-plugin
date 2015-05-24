@@ -9,7 +9,7 @@
     <artifactId>sphinx_reports-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <version>0.1.1-SNAPSHOT</version>
-    <url>http://vache.jp</url>
+    <url>https://github.com/lvjp/sphinx_reports-maven-plugin</url>
     <name>sphinx-reports</name>
     <description>Maven plugin that creates reports with Sphinx</description>
 
@@ -28,6 +28,12 @@
             <timezone>Asia/Tokyo</timezone>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:lvjp/sphinx_reports-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:lvjp/sphinx_reports-maven-plugin.git</developerConnection>
+        <url>git@github.com:lvjp/sphinx_reports-maven-plugin.git</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
