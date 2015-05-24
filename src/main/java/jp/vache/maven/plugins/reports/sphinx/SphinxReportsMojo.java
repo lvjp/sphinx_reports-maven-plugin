@@ -3,6 +3,7 @@ package jp.vache.maven.plugins.reports.sphinx;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -15,7 +16,9 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author VERDOÏA Laurent <verdoialaurent@gmail.com>
@@ -149,6 +152,30 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
             engine.eval("print 'Python version: ' + sys.version");
         } catch (final ScriptException e) {
             throw new RuntimeException("Cannot run python script", e);
+        }
+
+        printParameters();
+    }
+
+    private void printParameters() {
+        final Log log = getLog();
+
+        if (!log.isDebugEnabled()) {
+            return;
+        }
+
+        final Map<String, String> data = new HashMap<String, String>();
+        data.put("inputEncoding", inputEncoding);
+        data.put("outputEncoding", outputEncoding);
+        data.put("name", name);
+        data.put("description", description);
+        data.put("inputDirectory", inputDirectory.toString());
+        data.put("reportOutputDirectory", reportOutputDirectory.toString());
+        data.put("destinationDirectory", destinationDirectory);
+        data.put("getOutputName()", getOutputName());
+
+        for (final Map.Entry<String, String> pair : data.entrySet()) {
+            log.info(pair.getKey() + " => " + pair.getValue());
         }
     }
 }
