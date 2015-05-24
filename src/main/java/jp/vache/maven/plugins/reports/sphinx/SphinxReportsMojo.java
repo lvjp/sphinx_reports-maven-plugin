@@ -93,22 +93,22 @@ public class SphinxReportsMojo extends AbstractMojo implements MavenReport {
     }
 
     @Override
+    public File getReportOutputDirectory() {
+        return reportOutputDirectory;
+    }
+
+    @Override
     public void setReportOutputDirectory(File reportOutputDirectory) {
         updateReportOutputDirectory(reportOutputDirectory, destinationDirectory);
     }
 
-    @Override
-    public File getReportOutputDirectory() {
-        return reportOutputDirectory;
+    public String getDestinationDirectory() {
+        return destinationDirectory;
     }
 
     public void setDestinationDirectory(final String destinationDirectory) {
         updateReportOutputDirectory(reportOutputDirectory, destinationDirectory);
         this.destinationDirectory = destinationDirectory;
-    }
-
-    public String getDestinationDirectory() {
-        return destinationDirectory;
     }
 
     @Override
